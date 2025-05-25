@@ -55,6 +55,7 @@
         en: {
           translation: {
             title: "Employee Management",
+            menu: "Menu",
             dashboard: "Dashboard",
             employees: "Employees",
             reports: "Reports",
@@ -276,7 +277,7 @@
       fallbackLng: "en"
     });
 
-    const Sidebar = ({ activeView, setActiveView }) => {
+    const Sidebar = ({ activeView, setActiveView, isMobile, toggleMobileMenu, showMobileMenu }) => {
       const { t } = useTranslation();
       
       const menuItems = [
@@ -287,16 +288,26 @@
       ];
 
       return (
-        <div className="sidebar w-64 min-h-screen text-white p-6">
-          <div className="mb-8">
+        <div className={`sidebar text-white p-6 fixed inset-y-0 left-0 z-40 transform ${
+          isMobile && !showMobileMenu ? '-translate-x-full' : 'translate-x-0'
+        } md:relative md:translate-x-0 w-64 min-h-screen transition-transform duration-300 ease-in-out`}>
+          <div className="mb-8 flex items-center justify-between md:justify-start">
             <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+            {isMobile && (
+              <button onClick={toggleMobileMenu} className="text-white text-3xl focus:outline-none md:hidden">
+                &times;
+              </button>
+            )}
           </div>
           
           <nav className="space-y-2">
             {menuItems.map(item => (
               <button
                 key={item.id}
-                onClick={() => setActiveView(item.id)}
+                onClick={() => {
+                  setActiveView(item.id);
+                  if (isMobile) toggleMobileMenu();
+                }}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
                   activeView === item.id 
                     ? 'bg-white bg-opacity-20 text-white' 
@@ -325,14 +336,14 @@
     };
 
     const StatsCard = ({ icon, title, value, subtitle, color }) => (
-      <div className={`employee-card p-6 rounded-xl card-hover ${color}`}>
+      <div className={`employee-card p-4 sm:p-6 rounded-xl card-hover ${color}`}>
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-600 text-sm font-medium">{title}</p>
-            <p className="text-3xl font-bold text-gray-800 mt-1">{value}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-1">{value}</p>
             {subtitle && <p className="text-gray-500 text-xs mt-1">{subtitle}</p>}
           </div>
-          <div className="text-3xl opacity-60">{icon}</div>
+          <div className="text-2xl sm:text-3xl opacity-60">{icon}</div>
         </div>
       </div>
     );
@@ -355,36 +366,36 @@
       ];
 
       return (
-        <div className="p-8">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">{t('welcome')}</h2>
+        <div className="p-4 sm:p-8">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">{t('welcome')}</h2>
             <p className="text-gray-600">{t('whatsHappeningToday')}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
             {stats.map((stat, index) => (
               <StatsCard key={index} {...stat} />
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="employee-card p-6 rounded-xl">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('quickActions')}</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+            <div className="employee-card p-4 sm:p-6 rounded-xl">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">{t('quickActions')}</h3>
               <div className="space-y-3">
-                <button className="w-full btn-primary text-white px-4 py-3 rounded-lg font-medium">
+                <button className="w-full btn-primary text-white px-4 py-3 rounded-lg font-medium text-sm sm:text-base">
                   {t('addEmployee')}
                 </button>
-                <button className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                <button className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-sm sm:text-base">
                   {t('viewAll')} {t('employees')}
                 </button>
-                <button className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                <button className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-sm sm:text-base">
                   {t('generateReport')}
                 </button>
               </div>
             </div>
 
-            <div className="employee-card p-6 rounded-xl">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('recentActivity')}</h3>
+            <div className="employee-card p-4 sm:p-6 rounded-xl">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">{t('recentActivity')}</h3>
               <div className="space-y-4">
                 {recentActivity.map((activity, index) => (
                   <div key={index} className="flex items-start space-x-3">
@@ -618,13 +629,13 @@
       });
 
       return (
-        <div className="p-8">
-          <div className="flex justify-between items-center mb-8">
+        <div className="p-4 sm:p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">{t('employees')}</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">{t('employees')}</h2>
               <p className="text-gray-600">{t('manageTeamMembers')}</p>
             </div>
-            <button className="btn-primary text-white px-6 py-3 rounded-lg font-medium">
+            <button className="btn-primary text-white px-6 py-3 rounded-lg font-medium mt-4 sm:mt-0 w-full sm:w-auto">
               {t('addEmployee')}
             </button>
           </div>
@@ -692,7 +703,7 @@
                   </div>
                 </div>
 
-                <div className="flex space-x-2">
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                   <button
                     onClick={() => {
                       setSelectedEmployee(employee);
@@ -741,11 +752,11 @@
       ];
 
       return (
-        <div className="p-8">
-          <div className="flex items-center justify-between mb-8">
+        <div className="p-4 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8">
             <button
               onClick={() => setActiveView('employees')}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 mb-4 sm:mb-0"
             >
               <span>←</span>
               <span>{t('backToList')}</span>
@@ -760,13 +771,13 @@
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Left Column - Profile Info */}
             <div className="lg:col-span-2 space-y-6">
               {/* Header Card */}
               <div className="employee-card p-6 rounded-xl">
-                <div className="flex items-center space-x-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-3xl">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-3xl flex-shrink-0">
                     {employee.avatar}
                   </div>
                   <div className="flex-1">
@@ -774,7 +785,7 @@
                     <p className="text-gray-600 text-lg">{employee.position}</p>
                     <p className="text-gray-500">{employee.department} • {employee.empId}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right sm:self-start">
                     <div className="px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium mb-2">
                       {t('active')}
                     </div>
@@ -1135,8 +1146,10 @@
       const [activeView, setActiveView] = useState("dashboard");
       const [selectedEmployee, setSelectedEmployee] = useState(null);
       const [showNotifications, setShowNotifications] = useState(false);
+      const [showMobileMenu, setShowMobileMenu] = useState(false); // New state for mobile menu
       const notificationPanelRef = useRef(null);
       const notificationButtonRef = useRef(null);
+      const headerRef = useRef(null); // Ref for header to detect mobile view
 
       const [notifications, setNotifications] = useState([
         { id: 1, message: "New leave request from Mike Chen", time: "5m ago", read: false },
@@ -1150,11 +1163,26 @@
         setShowNotifications(!showNotifications);
       };
 
+      const toggleMobileMenu = () => {
+        setShowMobileMenu(!showMobileMenu);
+      };
+
       const markAsRead = (id) => {
         setNotifications(notifications.map(n => 
           n.id === id ? { ...n, read: true } : n
         ));
       };
+
+      // Detect if on mobile based on header width (simplified for example)
+      const [isMobile, setIsMobile] = useState(false);
+      useEffect(() => {
+        const checkMobile = () => {
+          setIsMobile(window.innerWidth < 768); // Tailwind's 'md' breakpoint
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+      }, []);
 
       useEffect(() => {
         const handleClickOutside = (event) => {
@@ -1181,25 +1209,45 @@
 
       return (
         <div className="flex min-h-screen bg-gray-50">
-          <Sidebar activeView={activeView} setActiveView={setActiveView} />
+          {/* Mobile Overlay for Sidebar */}
+          {isMobile && showMobileMenu && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 z-30" 
+              onClick={toggleMobileMenu}
+            ></div>
+          )}
+
+          <Sidebar 
+            activeView={activeView} 
+            setActiveView={setActiveView} 
+            isMobile={isMobile} 
+            toggleMobileMenu={toggleMobileMenu}
+            showMobileMenu={showMobileMenu}
+          />
           
-          <div className="flex-1 min-h-screen">
+          <div className="flex-1 min-h-screen flex flex-col">
             {/* Top Header */}
-            <div className="bg-white border-b border-gray-200 px-8 py-4">
+            <div className="bg-white border-b border-gray-200 px-4 sm:px-8 py-3 sm:py-4" ref={headerRef}>
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
-                  <h1 className="text-xl font-semibold text-gray-800">
+                <div className="flex items-center space-x-2 md:space-x-4">
+                  <button 
+                    onClick={toggleMobileMenu} 
+                    className="text-gray-600 hover:text-gray-800 text-2xl focus:outline-none md:hidden"
+                  >
+                    ☰
+                  </button>
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-800">
                     {activeView === 'dashboard' && t('dashboard')}
                     {activeView === 'employees' && t('employeeManagementHeader')}
                     {activeView === 'profile' && t('employeeProfileHeader')}
                     {activeView === 'reports' && t('reportsHeader')}
-                    {activeView === 'settings' && t('settings')}
+                    {activeView === 'settings' && t('systemSettingsHeader')}
                   </h1>
                 </div>
                 
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 md:space-x-4">
                   <select
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    className="border border-gray-300 rounded-lg px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm"
                     onChange={(e) => i18next.changeLanguage(e.target.value)}
                   >
                     <option value="en">🇺🇸 English</option>
@@ -1208,11 +1256,11 @@
                   
                   <div className="relative">
                     <button 
-                      className="p-2 text-gray-400 hover:text-gray-600"
+                      className="p-1 sm:p-2 text-gray-400 hover:text-gray-600"
                       onClick={toggleNotifications}
                       ref={notificationButtonRef}
                     >
-                      <span className="text-xl">🔔</span>
+                      <span className="text-lg sm:text-xl">🔔</span>
                       {unreadNotificationsCount > 0 && (
                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
                           {unreadNotificationsCount}
@@ -1221,12 +1269,12 @@
                     </button>
                     {showNotifications && (
                       <div 
-                        className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 z-10"
+                        className="absolute right-0 mt-2 w-64 sm:w-80 bg-white rounded-lg shadow-lg py-2 z-10"
                         ref={notificationPanelRef}
                       >
-                        <h3 className="text-lg font-semibold text-gray-800 px-4 py-2">{t('notifications')}</h3>
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 px-4 py-2">{t('notifications')}</h3>
                         {notifications.length === 0 ? (
-                          <p className="text-gray-500 px-4 py-2">{t('noNewNotifications')}</p>
+                          <p className="text-gray-500 px-4 py-2 text-sm">{t('noNewNotifications')}</p>
                         ) : (
                           notifications.map(notification => (
                             <div 
@@ -1255,7 +1303,7 @@
                     )}
                   </div>
                   
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm sm:text-base">
                     A
                   </div>
                 </div>
@@ -1263,7 +1311,7 @@
             </div>
 
             {/* Main Content */}
-            <div className="flex-1">
+            <div className="flex-1 overflow-y-auto">
               {activeView === "dashboard" && <Dashboard />}
               {activeView === "employees" && (
                 <EmployeeList 
@@ -1278,17 +1326,17 @@
                 />
               )}
               {activeView === "reports" && (
-                <div className="p-8">
-                  <div className="employee-card p-6 rounded-xl">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('reportsSectionTitle')}</h2>
-                    <p className="text-gray-600 mb-6">{t('reportsSectionDescription')}</p>
+                <div className="p-4 sm:p-8">
+                  <div className="employee-card p-4 sm:p-6 rounded-xl">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">{t('reportsSectionTitle')}</h2>
+                    <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">{t('reportsSectionDescription')}</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                       {/* Monthly Leave Report */}
                       <div className="bg-blue-50 p-6 rounded-xl card-hover flex flex-col items-center text-center">
-                        <div className="text-5xl mb-3">🗓️</div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('monthlyLeaveReport')}</h3>
-                        <p className="text-gray-600 text-sm mb-4">{t('monthlyLeaveReportDesc')}</p>
+                        <div className="text-4xl sm:text-5xl mb-3">🗓️</div>
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">{t('monthlyLeaveReport')}</h3>
+                        <p className="text-gray-600 text-xs sm:text-sm mb-4">{t('monthlyLeaveReportDesc')}</p>
                         <button className="btn-primary text-white px-4 py-2 rounded-lg text-sm">
                           {t('generateReport')}
                         </button>
@@ -1296,9 +1344,9 @@
 
                       {/* Total Employee Report */}
                       <div className="bg-green-50 p-6 rounded-xl card-hover flex flex-col items-center text-center">
-                        <div className="text-5xl mb-3">👥</div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('totalEmployeeReport')}</h3>
-                        <p className="text-gray-600 text-sm mb-4">{t('totalEmployeeReportDesc')}</p>
+                        <div className="text-4xl sm:text-5xl mb-3">👥</div>
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">{t('totalEmployeeReport')}</h3>
+                        <p className="text-gray-600 text-xs sm:text-sm mb-4">{t('totalEmployeeReportDesc')}</p>
                         <button className="btn-primary text-white px-4 py-2 rounded-lg text-sm">
                           {t('generateReport')}
                         </button>
@@ -1306,9 +1354,9 @@
 
                       {/* Placeholder for more reports */}
                       <div className="bg-gray-50 p-6 rounded-xl card-hover flex flex-col items-center text-center border border-gray-200 border-dashed">
-                        <div className="text-5xl mb-3 text-gray-400">➕</div>
-                        <h3 className="text-xl font-semibold text-gray-600 mb-2">{t('addNewReport')}</h3>
-                        <p className="text-gray-500 text-sm mb-4">{t('clickToCreateCustomReport')}</p>
+                        <div className="text-4xl sm:text-5xl mb-3 text-gray-400">➕</div>
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">{t('addNewReport')}</h3>
+                        <p className="text-gray-500 text-xs sm:text-sm mb-4">{t('clickToCreateCustomReport')}</p>
                         <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition-colors">
                           {t('createCustom')}
                         </button>
@@ -1318,12 +1366,12 @@
                 </div>
               )}
               {activeView === "settings" && (
-                <div className="p-8">
-                  <div className="employee-card p-12 rounded-xl text-center">
-                    <div className="text-6xl mb-4">⚙️</div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">{t('systemSettingsHeader')}</h2>
-                    <p className="text-gray-600">{t('configureSystemSettings')}</p>
-                    <button className="mt-6 btn-primary text-white px-6 py-3 rounded-lg">
+                <div className="p-4 sm:p-8">
+                  <div className="employee-card p-6 sm:p-12 rounded-xl text-center">
+                    <div className="text-5xl sm:text-6xl mb-4">⚙️</div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">{t('systemSettingsHeader')}</h2>
+                    <p className="text-gray-600 text-sm sm:text-base">{t('configureSystemSettings')}</p>
+                    <button className="mt-6 btn-primary text-white px-6 py-3 rounded-lg text-sm sm:text-base">
                       {t('openSettings')}
                     </button>
                   </div>
