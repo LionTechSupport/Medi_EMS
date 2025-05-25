@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Management System</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/i18next@23.2.11/dist/umd/i18next.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-i18next@12.3.1/dist/umd/react-i18next.min.js"></script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .search-bar {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .employee-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .sidebar {
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    const { useTranslation } = ReactI18next;
+
+    i18next.use(ReactI18next.initReactI18next).init({
+      resources: {
+        en: {
+          translation: {
+            title: "Employee Management",
+            dashboard: "Dashboard",
+            employees: "Employees",
+            reports: "Reports",
+            settings: "Settings",
+            searchPlaceholder: "Search employees...",
+            totalEmployees: "Total Employees",
+            activeEmployees: "Active Employees",
+            onLeave: "On Leave Today",
+            pendingDocs: "Pending Documents",
+            name: "Name",
+            position: "Position",
+            department: "Department",
+            status: "Status",
+            actions: "Actions",
+            viewProfile: "View Profile",
+            viewDocuments: "Documents",
+            leaveDetails: "Leave",
+            active: "Active",
+            inactive: "Inactive",
+            onLeaveStatus: "On Leave",
+            all: "All Departments",
+            medical: "Medical",
+            nursing: "Nursing",
+            administrative: "Administrative",
+            maintenance: "Maintenance",
+            filterBy: "Filter by Department",
+            addEmployee: "Add Employee",
+            employeeProfile: "Employee Profile",
+            personalInfo: "Personal Information",
+            workInfo: "Work Information",
+            documents: "Documents",
+            leaveBalance: "Leave Balance",
+            fullName: "Full Name",
+            nic: "NIC Number",
+            dateOfBirth: "Date of Birth",
+            address: "Address",
+            phone: "Phone",
+            email: "Email",
+            designation: "Designation",
+            empId: "Employee ID",
+            joinDate: "Join Date",
+            salary: "Salary",
+            casual: "Casual Leave",
+            sick: "Sick Leave",
+            annual: "Annual Leave",
+            maternity: "Maternity Leave",
+            uploadDocument: "Upload Document",
+            dragDrop: "Drag & drop files here or click to browse",
+            supportedFormats: "Supported: PDF, JPG, PNG (Max 5MB)",
+            recentActivity: "Recent Activity",
+            backToList: "Back to Employees",
+            save: "Save Changes",
+            edit: "Edit",
+            language: "Language",
+            profile: "Profile",
+            logout: "Logout",
+            welcome: "Welcome back",
+            quickActions: "Quick Actions",
+            viewAll: "View All",
+            daysLeft: "days left",
+            applied: "Applied",
+            approved: "Approved",
+            rejected: "Rejected",
+            reportsSectionTitle: "Reports Section",
+            reportsSectionDescription: "Generate and view detailed reports on your employees, attendance, and leave records. All reports can be downloaded as PDF/Excel/CSV after generation.",
+            monthlyLeaveReport: "Monthly Leave Report",
+            monthlyLeaveReportDesc: "A detailed breakdown of monthly employee leaves.",
+            totalEmployeeReport: "Total Employee Report",
+            totalEmployeeReportDesc: "A comprehensive report of all employees categorized by grade, category, etc.",
+            addNewReport: "Add New Report",
+            clickToCreateCustomReport: "Click to create a custom report.",
+            createCustom: "Create Custom",
+            whatsHappeningToday: "Here's what's happening with your team today",
+            employeeManagementHeader: "Employee Management",
+            employeeProfileHeader: "Employee Profile",
+            reportsHeader: "Reports",
+            systemSettingsHeader: "System Settings",
+            manageTeamMembers: "Manage your team members",
+            searchEmployeeDetails: "Search by Name, NIC, W&OP, or Employee ID...",
+            allGrades: "All Grades"
+          }
+        },
+        si: {
+          translation: {
+            title: "සේවක කළමනාකරණය",
+            dashboard: "උපකරණ පුවරුව",
+            employees: "සේවකයන්",
+            reports: "වාර්තා",
+            settings: "සැකසීම්",
+            searchPlaceholder: "සේවකයන් සොයන්න...",
+            totalEmployees: "මුළු සේවකයන්",
+            activeEmployees: "ක්‍රියාකාරී සේවකයන්",
+            onLeave: "අද නිවාඩුවේ",
+            pendingDocs: "බලාපොරොත්තුවේ ඇති ලේඛන",
+            name: "නම",
+            position: "තනතුර",
+            department: "දෙපාර්තමේන්තුව",
+            status: "තත්ත්වය",
+            actions: "ක්‍රියා",
+            viewProfile: "පැතිකඩ",
+            viewDocuments: "ලේඛන",
+            leaveDetails: "නිවාඩු",
+            active: "ක්‍රියාකාරී",
+            inactive: "අක්‍රීය",
+            onLeaveStatus: "නිවාඩුවේ",
+            all: "සියලු දෙපාර්තමේන්තු",
+            medical: "වෛද්‍ය",
+            nursing: "හෙද",
+            administrative: "පරිපාලන",
+            maintenance: "නඩත්තු",
+            filterBy: "දෙපාර්තමේන්තුව අනුව",
+            addEmployee: "සේවකයෙකු එකතු කරන්න",
+            fullName: "සම්පූර්ණ නම",
+            nic: "ජාතික හැඳුනුම්පත් අංකය",
+            dateOfBirth: "උපන් දිනය",
+            address: "ලිපිනය",
+            phone: "දුරකථන අංකය",
+            email: "විද්‍යුත් තැපෑල",
+            designation: "තනතුර",
+            empId: "සේවක හැඳුනුම්පත",
+            joinDate: "එකතු වූ දිනය",
+            salary: "වැටුප",
+            casual: "අනියම් නිවාඩු",
+            sick: "අසනීප නිවාඩු",
+            annual: "වාර්ෂික නිවාඩු",
+            maternity: "මාතෘ නිවාඩු",
+            uploadDocument: "ලේඛනයක් උඩුගත කරන්න",
+            dragDrop: "ගොනු මෙහි ඇද දමන්න හෝ බ්‍රවුස් කිරීමට ක්ලික් කරන්න",
+            supportedFormats: "සහාය දක්වන ආකෘති: PDF, JPG, PNG (උපරිම 5MB)",
+            recentActivity: "නවතම ක්‍රියාකාරකම්",
+            backToList: "සේවක ලැයිස්තුවට ආපසු",
+            save: "වෙනස්කම් සුරකින්න",
+            edit: "සංස්කරණය කරන්න",
+            language: "භාෂාව",
+            profile: "පැතිකඩ",
+            logout: "ඉවත් වන්න",
+            welcome: "නැවත සාදරයෙන් පිළිගනිමු",
+            quickActions: "ඉක්මන් ක්‍රියා",
+            viewAll: "සියල්ල බලන්න",
+            daysLeft: "දින ඉතිරිව ඇත",
+            applied: "ඉල්ලුම් කරන ලදී",
+            approved: "අනුමත කරන ලදී",
+            rejected: "ප්‍රතික්ෂේප කරන ලදී",
+            manageTeamMembers: "ඔබේ කණ්ඩායම් සාමාජිකයන් කළමනාකරණය කරන්න",
+            searchEmployeeDetails: "නම, ජාතික හැඳුනුම්පත, W&OP, හෝ සේවක හැඳුනුම්පත මගින් සොයන්න...",
+            allGrades: "සියලුම ශ්‍රේණි",
+            joined: "එකතු විය",
+            wopNumber: "W&OP අංකය",
+            salaryCode: "වැටුප් කේතය",
+            salaryScale: "වැටුප් පරිමාණය",
+            gradeClass: "ශ්‍රේණිය/පන්තිය",
+            firstAppointmentDate: "පළමු පත්වීම් දිනය",
+            confirmationDate: "තහවුරු කිරීමේ දිනය",
+            incrementDate: "වැටුප් වැඩිවීමේ දිනය",
+            workplaceReportDate: "සේවා ස්ථාන වාර්තා දිනය",
+            previousServiceStatus: "පෙර සේවා තත්ත්වය",
+            hideLeaveManagement: "නිවාඩු කළමනාකරණය සඟවන්න",
+            manageLeaves: "නිවාඩු කළමනාකරණය කරන්න",
+            used: "භාවිතා කරන ලදී",
+            remaining: "ඉතිරි",
+            addEditLeaveRecord: "නිවාඩු වාර්තාව එක් කරන්න/සංස්කරණය කරන්න",
+            leaveType: "නිවාඩු වර්ගය",
+            days: "දින",
+            reasonNotes: "හේතුව/සටහන්",
+            saveLeave: "නිවාඩු සුරකින්න",
+            pastLeaveEntries: "පසුගිය නිවාඩු ඇතුළත් කිරීම්",
+            year: "වසර",
+            type: "වර්ගය",
+            status: "තත්ත්වය",
+            notes: "සටහන්",
+            actions: "ක්‍රියා",
+            hrNotesComments: "මානව සම්පත් සටහන්/අදහස්",
+            addHrNotesComments: "නිවාඩු ඉතිහාසය පිළිබඳ මානව සම්පත් සටහන් හෝ අදහස් එක් කරන්න...",
+            saveNotes: "සටහන් සුරකින්න",
+            preview: "පෙරදසුන",
+            download: "බාගත කරන්න",
+            delete: "මකන්න",
+            notifications: "දැනුම්දීම්",
+            noNewNotifications: "නව දැනුම්දීම් නොමැත.",
+            viewAllNotifications: "සියලුම දැනුම්දීම් බලන්න",
+            employeeManagementHeader: "සේවක කළමනාකරණය",
+            employeeProfileHeader: "සේවක පැතිකඩ",
+            reportsHeader: "වාර්තා",
+            systemSettingsHeader: "පද්ධති සැකසීම්",
+            whatsHappeningToday: "අද ඔබේ කණ්ඩායමට සිදුවන්නේ කුමක්දැයි මෙහි දැක්වේ",
+            generateReport: "වාර්තාවක් සාදන්න",
+            monthlyLeaveReportDesc: "මාසික සේවක නිවාඩු පිළිබඳ සවිස්තරාත්මක බිඳවැටීම.",
+            totalEmployeeReportDesc: "ශ්‍රේණිය, කාණ්ඩය ආදිය අනුව වර්ගීකරණය කරන ලද සියලුම සේවකයන්ගේ පුළුල් වාර්තාව.",
+            addNewReport: "නව වාර්තාවක් එක් කරන්න",
+            clickToCreateCustomReport: "අභිරුචි වාර්තාවක් සෑදීමට ක්ලික් කරන්න.",
+            createCustom: "අභිරුචි සාදන්න",
+            configureSystemSettings: "පද්ධති මනාප, පරිශීලක අවසර, සහ පරිපාලන සැකසීම් වින්‍යාස කරන්න.",
+            openSettings: "සැකසීම් විවෘත කරන්න",
+            memberSince: "සාමාජිකත්වය ලබාගත් දිනය",
+            newLeaveRequest: "මයික් චෙන්ගෙන් නව නිවාඩු ඉල්ලීමක්",
+            documentUploadApproved: "ලීසා වැන්ග් විසින් ලේඛන උඩුගත කිරීම අනුමත කරන ලදී",
+            systemUpdateAvailable: "පද්ධති යාවත්කාලීන කිරීමක් තිබේ",
+            reportsSectionTitle: "වාර්තා අංශය",
+            reportsSectionDescription: "ඔබේ සේවකයන්, පැමිණීම සහ නිවාඩු වාර්තා පිළිබඳ සවිස්තරාත්මක වාර්තා සාදන්න සහ බලන්න. සියලුම වාර්තා උත්පාදනය කිරීමෙන් පසු PDF/Excel/CSV ලෙස බාගත කළ හැක.",
+            monthlyLeaveReport: "මාසික නිවාඩු වාර්තාව",
+            monthlyLeaveReportDesc: "මාසික සේවක නිවාඩු පිළිබඳ සවිස්තරාත්මක බිඳවැටීම.",
+            totalEmployeeReport: "මුළු සේවක වාර්තාව",
+            totalEmployeeReportDesc: "ශ්‍රේණිය, කාණ්ඩය ආදිය අනුව වර්ගීකරණය කරන ලද සියලුම සේවකයන්ගේ පුළුල් වාර්තාව.",
+            addNewReport: "නව වාර්තාවක් එක් කරන්න",
+            clickToCreateCustomReport: "අභිරුචි වාර්තාවක් සෑදීමට ක්ලික් කරන්න.",
+            createCustom: "අභිරුචි සාදන්න",
+            whatsHappeningToday: "අද ඔබේ කණ්ඩායමට සිදුවන්නේ කුමක්දැයි මෙහි දැක්වේ",
+            employeeManagementHeader: "සේවක කළමනාකරණය",
+            employeeProfileHeader: "සේවක පැතිකඩ",
+            reportsHeader: "වාර්තා",
+            systemSettingsHeader: "පද්ධති සැකසීම්",
+            manageTeamMembers: "ඔබේ කණ්ඩායම් සාමාජිකයන් කළමනාකරණය කරන්න",
+            searchEmployeeDetails: "නම, ජාතික හැඳුනුම්පත, W&OP, හෝ සේවක හැඳුනුම්පත මගින් සොයන්න...",
+            allGrades: "සියලුම ශ්‍රේණි"
+          }
+        }
+      },
+      lng: "en",
+      fallbackLng: "en"
+    });
+
+    const Sidebar = ({ activeView, setActiveView }) => {
+      const { t } = useTranslation();
+      
+      const menuItems = [
+        { id: 'dashboard', icon: '📊', label: t('dashboard') },
+        { id: 'employees', icon: '👥', label: t('employees') },
+        { id: 'reports', icon: '📈', label: t('reports') },
+        { id: 'settings', icon: '⚙️', label: t('settings') }
+      ];
+
+      return (
+        <div className="sidebar w-64 min-h-screen text-white p-6">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+          </div>
+          
+          <nav className="space-y-2">
+            {menuItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => setActiveView(item.id)}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+                  activeView === item.id 
+                    ? 'bg-white bg-opacity-20 text-white' 
+                    : 'text-gray-200 hover:bg-white hover:bg-opacity-10'
+                }`}
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span className="font-medium">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+          
+          <div className="absolute bottom-6 left-6 right-6">
+            <div className="flex items-center space-x-3 px-4 py-3 bg-white bg-opacity-10 rounded-lg">
+              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <span className="text-sm">👤</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium">Admin User</p>
+                <p className="text-xs text-gray-300">{t('profile')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const StatsCard = ({ icon, title, value, subtitle, color }) => (
+      <div className={`employee-card p-6 rounded-xl card-hover ${color}`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-600 text-sm font-medium">{title}</p>
+            <p className="text-3xl font-bold text-gray-800 mt-1">{value}</p>
+            {subtitle && <p className="text-gray-500 text-xs mt-1">{subtitle}</p>}
+          </div>
+          <div className="text-3xl opacity-60">{icon}</div>
+        </div>
+      </div>
+    );
+
+    const Dashboard = () => {
+      const { t } = useTranslation();
+      
+      const stats = [
+        { icon: '👥', title: t('totalEmployees'), value: '248', color: 'bg-blue-50' },
+        { icon: '✅', title: t('activeEmployees'), value: '235', color: 'bg-green-50' },
+        { icon: '🏖️', title: t('onLeave'), value: '12', color: 'bg-orange-50' },
+        { icon: '📄', title: t('pendingDocs'), value: '8', color: 'bg-red-50' }
+      ];
+
+      const recentActivity = [
+        { action: 'New employee added', name: 'Sarah Johnson', time: '2 hours ago', type: 'add' },
+        { action: 'Leave request approved', name: 'Mike Chen', time: '4 hours ago', type: 'leave' },
+        { action: 'Document uploaded', name: 'Lisa Wang', time: '6 hours ago', type: 'document' },
+        { action: 'Profile updated', name: 'John Smith', time: '1 day ago', type: 'update' }
+      ];
+
+      return (
+        <div className="p-8">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">{t('welcome')}</h2>
+            <p className="text-gray-600">{t('whatsHappeningToday')}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {stats.map((stat, index) => (
+              <StatsCard key={index} {...stat} />
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="employee-card p-6 rounded-xl">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('quickActions')}</h3>
+              <div className="space-y-3">
+                <button className="w-full btn-primary text-white px-4 py-3 rounded-lg font-medium">
+                  {t('addEmployee')}
+                </button>
+                <button className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                  {t('viewAll')} {t('employees')}
+                </button>
+                <button className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                  {t('generateReport')}
+                </button>
+              </div>
+            </div>
+
+            <div className="employee-card p-6 rounded-xl">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('recentActivity')}</h3>
+              <div className="space-y-4">
+                {recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
+                      activity.type === 'add' ? 'bg-green-100 text-green-600' :
+                      activity.type === 'leave' ? 'bg-orange-100 text-orange-600' :
+                      activity.type === 'document' ? 'bg-blue-100 text-blue-600' :
+                      'bg-gray-100 text-gray-600'
+                    }`}>
+                      {activity.type === 'add' ? '➕' : 
+                       activity.type === 'leave' ? '🏖️' : 
+                       activity.type === 'document' ? '📄' : '✏️'}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-800">{activity.action}</p>
+                      <p className="text-sm text-gray-600">{activity.name}</p>
+                      <p className="text-xs text-gray-400">{activity.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const EmployeeList = ({ setSelectedEmployee, setActiveView }) => {
+      const { t } = useTranslation();
+      const [search, setSearch] = useState("");
+      const [departmentFilter, setDepartmentFilter] = useState("all");
+      const [gradeFilter, setGradeFilter] = useState("all");
+
+      const employees = [
+        { 
+          id: 1, 
+          name: "Dr. Sarah Johnson", 
+          position: "Senior Physician", 
+          department: "Medical", 
+          status: "active",
+          avatar: "👩‍⚕️",
+          empId: "EMP001",
+          phone: "+94 77 123 4567",
+          joinDate: "2020-01-15",
+          nic: "920123456V",
+          wopNumber: "WOP12345",
+          salaryCode: "SC001",
+          salaryScale: "Grade 10",
+          gradeClass: "Class A",
+          firstAppointmentDate: "2020-01-15",
+          confirmationDate: "2021-01-15",
+          incrementDate: "2022-01-15",
+          workplaceReportDate: "2023-01-15",
+          previousServiceStatus: "N/A"
+        },
+        { 
+          id: 2, 
+          name: "Mike Chen", 
+          position: "Head Nurse", 
+          department: "Nursing", 
+          status: "onLeave",
+          avatar: "👨‍⚕️",
+          empId: "EMP002",
+          phone: "+94 77 234 5678",
+          joinDate: "2019-03-22",
+          nic: "891234567V",
+          wopNumber: "WOP67890",
+          salaryCode: "SC002",
+          salaryScale: "Grade 8",
+          gradeClass: "Class B",
+          firstAppointmentDate: "2019-03-22",
+          confirmationDate: "2020-03-22",
+          incrementDate: "2021-03-22",
+          workplaceReportDate: "2022-03-22",
+          previousServiceStatus: "Permanent"
+        },
+        { 
+          id: 3, 
+          name: "Lisa Wang", 
+          position: "Administrator", 
+          department: "Administrative", 
+          status: "active",
+          avatar: "👩‍💼",
+          empId: "EMP003",
+          phone: "+94 77 345 6789",
+          joinDate: "2021-07-10",
+          nic: "957890123V",
+          wopNumber: "WOP11223",
+          salaryCode: "SC003",
+          salaryScale: "Grade 9",
+          gradeClass: "Class A",
+          firstAppointmentDate: "2021-07-10",
+          confirmationDate: "2022-07-10",
+          incrementDate: "2023-07-10",
+          workplaceReportDate: "2024-07-10",
+          previousServiceStatus: "Temporary"
+        },
+        { 
+          id: 4, 
+          name: "James Wilson", 
+          position: "Maintenance Chief", 
+          department: "Maintenance", 
+          status: "active",
+          avatar: "👷‍♂️",
+          empId: "EMP004",
+          phone: "+94 77 456 7890",
+          joinDate: "2018-11-05",
+          nic: "854321098V",
+          wopNumber: "WOP44556",
+          salaryCode: "SC004",
+          salaryScale: "Grade 7",
+          gradeClass: "Class C",
+          firstAppointmentDate: "2018-11-05",
+          confirmationDate: "2019-11-05",
+          incrementDate: "2020-11-05",
+          workplaceReportDate: "2021-11-05",
+          previousServiceStatus: "N/A"
+        },
+        { 
+          id: 5, 
+          name: "Dr. Emily White", 
+          position: "Pediatrician", 
+          department: "Medical", 
+          status: "active",
+          avatar: "👩‍⚕️",
+          empId: "EMP005",
+          phone: "+94 77 567 8901",
+          joinDate: "2022-06-20",
+          nic: "901234567V",
+          wopNumber: "WOP98765",
+          salaryCode: "SC005",
+          salaryScale: "Grade 10",
+          gradeClass: "Class A",
+          firstAppointmentDate: "2022-06-20",
+          confirmationDate: "2023-06-20",
+          incrementDate: "2024-06-20",
+          workplaceReportDate: "2025-06-20",
+          previousServiceStatus: "N/A"
+        },
+        { 
+          id: 6, 
+          name: "Dr. David Green", 
+          position: "Cardiologist", 
+          department: "Medical", 
+          status: "active",
+          avatar: "👨‍⚕️",
+          empId: "EMP006",
+          phone: "+94 77 678 9012",
+          joinDate: "2017-09-10",
+          nic: "789012345V",
+          wopNumber: "WOP23456",
+          salaryCode: "SC006",
+          salaryScale: "Grade 11",
+          gradeClass: "Class A",
+          firstAppointmentDate: "2017-09-10",
+          confirmationDate: "2018-09-10",
+          incrementDate: "2019-09-10",
+          workplaceReportDate: "2020-09-10",
+          previousServiceStatus: "Permanent"
+        },
+        { 
+          id: 7, 
+          name: "Priya Sharma", 
+          position: "Staff Nurse", 
+          department: "Nursing", 
+          status: "active",
+          avatar: "👩‍⚕️",
+          empId: "EMP007",
+          phone: "+94 77 789 0123",
+          joinDate: "2023-02-01",
+          nic: "987654321V",
+          wopNumber: "WOP78901",
+          salaryCode: "SC007",
+          salaryScale: "Grade 6",
+          gradeClass: "Class B",
+          firstAppointmentDate: "2023-02-01",
+          confirmationDate: "2024-02-01",
+          incrementDate: "2025-02-01",
+          workplaceReportDate: "2026-02-01",
+          previousServiceStatus: "Temporary"
+        },
+        { 
+          id: 8, 
+          name: "Kasun Perera", 
+          position: "HR Officer", 
+          department: "Administrative", 
+          status: "active",
+          avatar: "👨‍💼",
+          empId: "EMP008",
+          phone: "+94 77 890 1234",
+          joinDate: "2021-04-01",
+          nic: "912345678V",
+          wopNumber: "WOP34567",
+          salaryCode: "SC008",
+          salaryScale: "Grade 8",
+          gradeClass: "Class A",
+          firstAppointmentDate: "2021-04-01",
+          confirmationDate: "2022-04-01",
+          incrementDate: "2023-04-01",
+          workplaceReportDate: "2024-04-01",
+          previousServiceStatus: "N/A"
+        }
+      ];
+
+      const getStatusBadge = (status) => {
+        switch(status) {
+          case 'active':
+            return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">{t('active')}</span>;
+          case 'inactive':
+            return <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">{t('inactive')}</span>;
+          case 'onLeave':
+            return <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">{t('onLeaveStatus')}</span>;
+          default:
+            return null;
+        }
+      };
+
+      const allGrades = [...new Set(employees.map(emp => emp.gradeClass))];
+
+      const filteredEmployees = employees.filter(emp => {
+        const lowerCaseSearch = search.toLowerCase();
+        return (
+          (departmentFilter === "all" || emp.department.toLowerCase() === departmentFilter.toLowerCase()) &&
+          (gradeFilter === "all" || emp.gradeClass.toLowerCase() === gradeFilter.toLowerCase()) &&
+          (emp.name.toLowerCase().includes(lowerCaseSearch) || 
+           emp.empId.toLowerCase().includes(lowerCaseSearch) ||
+           emp.position.toLowerCase().includes(lowerCaseSearch) ||
+           emp.nic.toLowerCase().includes(lowerCaseSearch) ||
+           emp.wopNumber.toLowerCase().includes(lowerCaseSearch))
+        );
+      });
+
+      return (
+        <div className="p-8">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-800 mb-2">{t('employees')}</h2>
+              <p className="text-gray-600">{t('manageTeamMembers')}</p>
+            </div>
+            <button className="btn-primary text-white px-6 py-3 rounded-lg font-medium">
+              {t('addEmployee')}
+            </button>
+          </div>
+
+          <div className="search-bar p-4 rounded-xl mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <input
+                type="text"
+                placeholder={t('searchEmployeeDetails')}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-full md:col-span-1 lg:col-span-2"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <select
+                className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+              >
+                <option value="all">{t('all')}</option>
+                <option value="medical">{t('medical')}</option>
+                <option value="nursing">{t('nursing')}</option>
+                <option value="administrative">{t('administrative')}</option>
+                <option value="maintenance">{t('maintenance')}</option>
+              </select>
+              <select
+                className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={gradeFilter}
+                onChange={(e) => setGradeFilter(e.target.value)}
+              >
+                <option value="all">{t('allGrades')}</option>
+                {allGrades.map(grade => (
+                  <option key={grade} value={grade}>{grade}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredEmployees.map((employee) => (
+              <div key={employee.id} className="employee-card p-6 rounded-xl card-hover">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xl">
+                    {employee.avatar}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-800">{employee.name}</h3>
+                    <p className="text-gray-600 text-sm">{employee.position}</p>
+                    <p className="text-gray-500 text-xs">{employee.empId}</p>
+                  </div>
+                  {getStatusBadge(employee.status)}
+                </div>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="mr-2">🏢</span>
+                    {employee.department}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="mr-2">📞</span>
+                    {employee.phone}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="mr-2">📅</span>
+                    {t('joined')} {employee.joinDate}
+                  </div>
+                </div>
+
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => {
+                      setSelectedEmployee(employee);
+                      setActiveView('profile');
+                    }}
+                    className="flex-1 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+                  >
+                    {t('viewProfile')}
+                  </button>
+                  <button className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                    📄
+                  </button>
+                  <button className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                    🏖️
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    const EmployeeProfile = ({ employee, setActiveView }) => {
+      const { t } = useTranslation();
+      const [isEditing, setIsEditing] = useState(false);
+      const [showLeaveManagement, setShowLeaveManagement] = useState(false);
+
+      const leaveBalance = {
+        casual: { total: 14, used: 5, remaining: 9 },
+        sick: { total: 21, used: 3, remaining: 18 },
+        annual: { total: 14, used: 8, remaining: 6 },
+        maternity: { total: 84, used: 0, remaining: 84 }
+      };
+
+      const pastLeaveEntries = [
+        { year: 2024, type: 'Casual', days: 3, status: 'Approved', notes: 'Family event' },
+        { year: 2024, type: 'Sick', days: 2, status: 'Approved', notes: 'Flu' },
+        { year: 2023, type: 'Annual', days: 7, status: 'Approved', notes: 'Vacation' },
+      ];
+
+      const documents = [
+        { name: "CV.pdf", type: "Resume", date: "2025-01-15", status: "approved" },
+        { name: "Certificates.pdf", type: "Qualifications", date: "2025-01-10", status: "approved" },
+        { name: "Medical_Report.pdf", type: "Medical", date: "2025-01-05", status: "pending" }
+      ];
+
+      return (
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-8">
+            <button
+              onClick={() => setActiveView('employees')}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+            >
+              <span>←</span>
+              <span>{t('backToList')}</span>
+            </button>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className="btn-primary text-white px-6 py-2 rounded-lg"
+              >
+                {isEditing ? t('save') : t('edit')}
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Profile Info */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Header Card */}
+              <div className="employee-card p-6 rounded-xl">
+                <div className="flex items-center space-x-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-3xl">
+                    {employee.avatar}
+                  </div>
+                  <div className="flex-1">
+                    <h1 className="text-2xl font-bold text-gray-800">{employee.name}</h1>
+                    <p className="text-gray-600 text-lg">{employee.position}</p>
+                    <p className="text-gray-500">{employee.department} • {employee.empId}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium mb-2">
+                      {t('active')}
+                    </div>
+                    <p className="text-sm text-gray-500">{t('memberSince')} {employee.joinDate}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Personal Information */}
+              <div className="employee-card p-6 rounded-xl">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">{t('personalInfo')}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('fullName')}</label>
+                    {isEditing ? (
+                      <input type="text" defaultValue={employee.name} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.name}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('nic')}</label>
+                    <p className="text-gray-800">920123456V</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('dateOfBirth')}</label>
+                    <p className="text-gray-800">1992-01-23</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('phone')}</label>
+                    <p className="text-gray-800">{employee.phone}</p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('address')}</label>
+                    <p className="text-gray-800">123 Main Street, Colombo 07, Sri Lanka</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('email')}</label>
+                    <p className="text-gray-800">sarah.johnson@hospital.lk</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Work Information */}
+              <div className="employee-card p-6 rounded-xl">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">{t('workInfo')}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('empId')}</label>
+                    <p className="text-gray-800">{employee.empId}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('designation')}</label>
+                    <p className="text-gray-800">{employee.position}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('department')}</label>
+                    <p className="text-gray-800">{employee.department}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('joinDate')}</label>
+                    <p className="text-gray-800">{employee.joinDate}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('salary')}</label>
+                    <p className="text-gray-800">LKR 150,000</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('wopNumber')}</label>
+                    {isEditing ? (
+                      <input type="text" defaultValue={employee.wopNumber} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.wopNumber}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('salaryCode')}</label>
+                    {isEditing ? (
+                      <input type="text" defaultValue={employee.salaryCode} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.salaryCode}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('salaryScale')}</label>
+                    {isEditing ? (
+                      <input type="text" defaultValue={employee.salaryScale} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.salaryScale}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('gradeClass')}</label>
+                    {isEditing ? (
+                      <input type="text" defaultValue={employee.gradeClass} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.gradeClass}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('firstAppointmentDate')}</label>
+                    {isEditing ? (
+                      <input type="date" defaultValue={employee.firstAppointmentDate} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.firstAppointmentDate}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('confirmationDate')}</label>
+                    {isEditing ? (
+                      <input type="date" defaultValue={employee.confirmationDate} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.confirmationDate}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('incrementDate')}</label>
+                    {isEditing ? (
+                      <input type="date" defaultValue={employee.incrementDate} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.incrementDate}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('workplaceReportDate')}</label>
+                    {isEditing ? (
+                      <input type="date" defaultValue={employee.workplaceReportDate} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.workplaceReportDate}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('previousServiceStatus')}</label>
+                    {isEditing ? (
+                      <input type="text" defaultValue={employee.previousServiceStatus} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    ) : (
+                      <p className="text-gray-800">{employee.previousServiceStatus}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Leave & Documents */}
+            <div className="space-y-6">
+              {/* Leave Balance */}
+              <div className="employee-card p-6 rounded-xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold text-gray-800">{t('leaveBalance')}</h2>
+                  <button 
+                    onClick={() => setShowLeaveManagement(!showLeaveManagement)}
+                    className="text-blue-600 text-sm hover:text-blue-800"
+                  >
+                    {showLeaveManagement ? t('hideLeaveManagement') : t('manageLeaves')}
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {Object.entries(leaveBalance).map(([type, data]) => (
+                    <div key={type} className="border-l-4 border-blue-400 pl-4">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-medium capitalize">{t(type)}</span>
+                        <span className="text-sm text-gray-600">{data.remaining} {t('daysLeft')}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-400 h-2 rounded-full" 
+                          style={{ width: `${(data.remaining / data.total) * 100}%` }}
+                        ></div>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {data.used} {t('used')} • {data.remaining} {t('remaining')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {showLeaveManagement && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('addEditLeaveRecord')}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">{t('leaveType')}</label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                          <option>{t('casual')}</option>
+                          <option>{t('sick')}</option>
+                          <option>{t('annual')}</option>
+                          <option>{t('maternity')}</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">{t('days')}</label>
+                        <input type="number" defaultValue="0" className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">{t('reasonNotes')}</label>
+                        <textarea rows="2" className="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                      </div>
+                    </div>
+                    <button className="btn-primary text-white px-4 py-2 rounded-lg font-medium">
+                      {t('saveLeave')}
+                    </button>
+
+                    <h3 className="text-lg font-semibold text-gray-800 mt-6 mb-3">{t('pastLeaveEntries')}</h3>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                          <tr className="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            <th className="py-3 px-4">{t('year')}</th>
+                            <th className="py-3 px-4">{t('type')}</th>
+                            <th className="py-3 px-4">{t('days')}</th>
+                            <th className="py-3 px-4">{t('status')}</th>
+                            <th className="py-3 px-4">{t('notes')}</th>
+                            <th className="py-3 px-4">{t('actions')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {pastLeaveEntries.map((entry, idx) => (
+                            <tr key={idx} className="border-b border-gray-200 last:border-b-0">
+                              <td className="py-3 px-4 text-sm text-gray-800">{entry.year}</td>
+                              <td className="py-3 px-4 text-sm text-gray-800">{entry.type}</td>
+                              <td className="py-3 px-4 text-sm text-gray-800">{entry.days}</td>
+                              <td className="py-3 px-4 text-sm">
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  entry.status === 'Approved' ? 'bg-green-100 text-green-700' :
+                                  entry.status === 'Pending' ? 'bg-orange-100 text-orange-700' :
+                                  'bg-red-100 text-red-700'
+                                }`}>
+                                  {entry.status === 'Approved' ? t('approved') :
+                                   entry.status === 'Pending' ? t('applied') :
+                                   t('rejected')}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-sm text-gray-800">{entry.notes}</td>
+                              <td className="py-3 px-4 text-sm">
+                                <button className="text-blue-600 hover:text-blue-800 mr-2">{t('edit')}</button>
+                                <button className="text-red-600 hover:text-red-800">{t('delete')}</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <h3 className="text-lg font-semibold text-gray-800 mt-6 mb-3">{t('hrNotesComments')}</h3>
+                    <textarea rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder={t('addHrNotesComments')}></textarea>
+                    <button className="mt-2 btn-primary text-white px-4 py-2 rounded-lg font-medium">
+                      {t('saveNotes')}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Documents */}
+              <div className="employee-card p-6 rounded-xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold text-gray-800">{t('documents')}</h2>
+                </div>
+                
+                {/* Drag and Drop Upload Area */}
+                <div 
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-4"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const files = Array.from(e.dataTransfer.files);
+                    console.log("Dropped files:", files);
+                    // Simulate upload feedback
+                    alert(`Uploading ${files.length} files... (Simulated)`);
+                  }}
+                >
+                  <input 
+                    type="file" 
+                    multiple 
+                    className="hidden" 
+                    id="document-upload" 
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files);
+                      console.log("Selected files:", files);
+                      // Simulate upload feedback
+                      alert(`Uploading ${files.length} files... (Simulated)`);
+                    }}
+                  />
+                  <label htmlFor="document-upload" className="cursor-pointer block">
+                    <p className="text-gray-500 text-lg mb-2">{t('dragDrop')}</p>
+                    <p className="text-gray-400 text-sm">{t('supportedFormats')}</p>
+                  </label>
+                </div>
+
+                {/* Upload Status/Feedback (Placeholder) */}
+                <div className="mb-4">
+                  {/* Example: <div className="bg-green-100 text-green-700 p-3 rounded-lg">Upload successful!</div> */}
+                  {/* Example: <div className="bg-red-100 text-red-700 p-3 rounded-lg">Upload failed. Please try again.</div> */}
+                </div>
+
+                {/* Document List */}
+                <div className="space-y-3">
+                  {documents.map((doc, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <span className="text-blue-600 text-sm">📄</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">{doc.name}</p>
+                          <p className="text-xs text-gray-500">{doc.type} • {doc.date}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          doc.status === 'approved' ? 'bg-green-100 text-green-700' :
+                          doc.status === 'pending' ? 'bg-orange-100 text-orange-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {doc.status === 'approved' ? t('approved') :
+                           doc.status === 'pending' ? t('applied') :
+                           t('rejected')}
+                        </span>
+                        {/* Document Actions */}
+                        <button 
+                          className="text-gray-400 hover:text-blue-600" 
+                          title={t('preview')}
+                          onClick={() => alert(`Previewing ${doc.name}`)}
+                        >
+                          👁️
+                        </button>
+                        <button 
+                          className="text-gray-400 hover:text-green-600" 
+                          title={t('download')}
+                          onClick={() => alert(`Downloading ${doc.name}`)}
+                        >
+                          ⬇️
+                        </button>
+                        <button 
+                          className="text-gray-400 hover:text-red-600" 
+                          title={t('delete')}
+                          onClick={() => {
+                            if (confirm(`Are you sure you want to delete ${doc.name}?`)) {
+                              alert(`${doc.name} deleted (Simulated)`);
+                            }
+                          }}
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { t } = useTranslation();
+      const [activeView, setActiveView] = useState("dashboard");
+      const [selectedEmployee, setSelectedEmployee] = useState(null);
+      const [showNotifications, setShowNotifications] = useState(false);
+      const notificationPanelRef = useRef(null);
+      const notificationButtonRef = useRef(null);
+
+      const [notifications, setNotifications] = useState([
+        { id: 1, message: "New leave request from Mike Chen", time: "5m ago", read: false },
+        { id: 2, message: "Document upload by Lisa Wang approved", time: "1h ago", read: false },
+        { id: 3, message: "System update available", time: "1d ago", read: true },
+      ]);
+
+      const unreadNotificationsCount = notifications.filter(n => !n.read).length;
+
+      const toggleNotifications = () => {
+        setShowNotifications(!showNotifications);
+      };
+
+      const markAsRead = (id) => {
+        setNotifications(notifications.map(n => 
+          n.id === id ? { ...n, read: true } : n
+        ));
+      };
+
+      return (
+        <div className="flex min-h-screen bg-gray-50">
+          <Sidebar activeView={activeView} setActiveView={setActiveView} />
+          
+          <div className="flex-1 min-h-screen">
+            {/* Top Header */}
+            <div className="bg-white border-b border-gray-200 px-8 py-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <h1 className="text-xl font-semibold text-gray-800">
+                    {activeView === 'dashboard' && t('dashboard')}
+                    {activeView === 'employees' && t('employeeManagementHeader')}
+                    {activeView === 'profile' && t('employeeProfileHeader')}
+                    {activeView === 'reports' && t('reportsHeader')}
+                    {activeView === 'settings' && t('settings')}
+                  </h1>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <select
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    onChange={(e) => i18next.changeLanguage(e.target.value)}
+                  >
+                    <option value="en">🇺🇸 English</option>
+                    <option value="si">🇱🇰 සිංහල</option>
+                  </select>
+                  
+                  <div className="relative">
+                    <button 
+                      className="p-2 text-gray-400 hover:text-gray-600"
+                      onClick={toggleNotifications}
+                    >
+                      <span className="text-xl">🔔</span>
+                      {unreadNotificationsCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                          {unreadNotificationsCount}
+                        </span>
+                      )}
+                    </button>
+                    {showNotifications && (
+                      <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 z-10">
+                        <h3 className="text-lg font-semibold text-gray-800 px-4 py-2">{t('notifications')}</h3>
+                        {notifications.length === 0 ? (
+                          <p className="text-gray-500 px-4 py-2">{t('noNewNotifications')}</p>
+                        ) : (
+                          notifications.map(notification => (
+                            <div 
+                              key={notification.id} 
+                              className={`flex items-center justify-between px-4 py-3 hover:bg-gray-100 cursor-pointer ${notification.read ? 'text-gray-500' : 'font-medium text-gray-800'}`}
+                              onClick={() => markAsRead(notification.id)}
+                            >
+                              <div>
+                                <p className="text-sm">
+                                  {notification.id === 1 && t('newLeaveRequest')}
+                                  {notification.id === 2 && t('documentUploadApproved')}
+                                  {notification.id === 3 && t('systemUpdateAvailable')}
+                                </p>
+                                <p className="text-xs text-gray-400">{notification.time}</p>
+                              </div>
+                              {!notification.read && (
+                                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                              )}
+                            </div>
+                          ))
+                        )}
+                        <div className="border-t border-gray-200 mt-2 pt-2 px-4">
+                          <button className="w-full text-blue-600 text-sm hover:text-blue-800">{t('viewAllNotifications')}</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white">
+                    A
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1">
+              {activeView === "dashboard" && <Dashboard />}
+              {activeView === "employees" && (
+                <EmployeeList 
+                  setSelectedEmployee={setSelectedEmployee} 
+                  setActiveView={setActiveView} 
+                />
+              )}
+              {activeView === "profile" && selectedEmployee && (
+                <EmployeeProfile 
+                  employee={selectedEmployee} 
+                  setActiveView={setActiveView} 
+                />
+              )}
+              {activeView === "reports" && (
+                <div className="p-8">
+                  <div className="employee-card p-6 rounded-xl">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('reportsSectionTitle')}</h2>
+                    <p className="text-gray-600 mb-6">{t('reportsSectionDescription')}</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {/* Monthly Leave Report */}
+                      <div className="bg-blue-50 p-6 rounded-xl card-hover flex flex-col items-center text-center">
+                        <div className="text-5xl mb-3">🗓️</div>
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('monthlyLeaveReport')}</h3>
+                        <p className="text-gray-600 text-sm mb-4">{t('monthlyLeaveReportDesc')}</p>
+                        <button className="btn-primary text-white px-4 py-2 rounded-lg text-sm">
+                          {t('generateReport')}
+                        </button>
+                      </div>
+
+                      {/* Total Employee Report */}
+                      <div className="bg-green-50 p-6 rounded-xl card-hover flex flex-col items-center text-center">
+                        <div className="text-5xl mb-3">👥</div>
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('totalEmployeeReport')}</h3>
+                        <p className="text-gray-600 text-sm mb-4">{t('totalEmployeeReportDesc')}</p>
+                        <button className="btn-primary text-white px-4 py-2 rounded-lg text-sm">
+                          {t('generateReport')}
+                        </button>
+                      </div>
+
+                      {/* Placeholder for more reports */}
+                      <div className="bg-gray-50 p-6 rounded-xl card-hover flex flex-col items-center text-center border border-gray-200 border-dashed">
+                        <div className="text-5xl mb-3 text-gray-400">➕</div>
+                        <h3 className="text-xl font-semibold text-gray-600 mb-2">{t('addNewReport')}</h3>
+                        <p className="text-gray-500 text-sm mb-4">{t('clickToCreateCustomReport')}</p>
+                        <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition-colors">
+                          {t('createCustom')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {activeView === "settings" && (
+                <div className="p-8">
+                  <div className="employee-card p-12 rounded-xl text-center">
+                    <div className="text-6xl mb-4">⚙️</div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">{t('systemSettingsHeader')}</h2>
+                    <p className="text-gray-600">{t('configureSystemSettings')}</p>
+                    <button className="mt-6 btn-primary text-white px-6 py-3 rounded-lg">
+                      {t('openSettings')}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
