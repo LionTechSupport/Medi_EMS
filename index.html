@@ -1156,6 +1156,29 @@
         ));
       };
 
+      useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (
+            notificationPanelRef.current &&
+            !notificationPanelRef.current.contains(event.target) &&
+            notificationButtonRef.current &&
+            !notificationButtonRef.current.contains(event.target)
+          ) {
+            setShowNotifications(false);
+          }
+        };
+
+        if (showNotifications) {
+          document.addEventListener("mousedown", handleClickOutside);
+        } else {
+          document.removeEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, [showNotifications]);
+
       return (
         <div className="flex min-h-screen bg-gray-50">
           <Sidebar activeView={activeView} setActiveView={setActiveView} />
@@ -1187,6 +1210,7 @@
                     <button 
                       className="p-2 text-gray-400 hover:text-gray-600"
                       onClick={toggleNotifications}
+                      ref={notificationButtonRef}
                     >
                       <span className="text-xl">🔔</span>
                       {unreadNotificationsCount > 0 && (
@@ -1196,7 +1220,10 @@
                       )}
                     </button>
                     {showNotifications && (
-                      <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 z-10">
+                      <div 
+                        className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 z-10"
+                        ref={notificationPanelRef}
+                      >
                         <h3 className="text-lg font-semibold text-gray-800 px-4 py-2">{t('notifications')}</h3>
                         {notifications.length === 0 ? (
                           <p className="text-gray-500 px-4 py-2">{t('noNewNotifications')}</p>
